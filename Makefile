@@ -35,6 +35,7 @@ CXX	= g++
 CFLAGS 	= -w -std=c++17 -g
 CFLAGS	+= -O3
 CFLAGS	+= -D NDEBUG
+CFLAGS	+= -fPIC
 
 ifeq ($(USEMCSMUS),YES)
 	CFLAGS += -D UMCSMUS
@@ -73,6 +74,9 @@ must: $(COBJS) $(MCOBJS) $(MCSMUS_OBJS)
 %.o: %.cc
 	@echo Compiling: $@
 	@$(CXX) $(CFLAGS) $(INC) -c -o $@ $<
+
+libmust: $(COBJS) $(MCOBJS) $(MCSMUS_OBJS)
+	@ar rcs libmust.a $(COBJS) $(MCOBJS) $(MCSMUS_OBJS)
 
 print-%  : ; @echo $* = $($*)
 
