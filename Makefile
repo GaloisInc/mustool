@@ -2,12 +2,13 @@ DIR	= $(shell pwd)
 MINISAT	= $(DIR)/custom_minisat
 MCSMUS	= $(DIR)/mcsmus
 MSAT	= libr
+Z3      = $(DIR)/deps/z3
 
 LIBD 	= -L/usr/lib -L/usr/local/lib
 LIBS 	= -lz
 LIBS	+= -lstdc++fs
 USR 	= /usr/include
-INC 	= -I $(MCSMUS) -I $(MINISAT) -I $(USR) -I /usr/local/include -I $(DIR) -I $(MCSMUS) 
+INC 	= -I $(MCSMUS) -I $(MINISAT) -I $(USR) -I /usr/local/include -I $(DIR) -I $(MCSMUS) -I $(Z3)/src/api -I $(Z3)/src/api/c++
 
 CSRCS	= $(wildcard *.cpp) $(wildcard $(DIR)/algorithms/*.cpp)
 CSRCS	+= $(wildcard $(DIR)/satSolvers/*.cpp) $(wildcard $(DIR)/core/*.cpp)
@@ -15,7 +16,6 @@ COBJS	= $(CSRCS:.cpp=.o)
 
 MCSRCS	= $(wildcard $(MINISAT)/*.cc)
 MCOBJS	= $(MCSRCS:.cc=.o)
-
 
 MCSMUS_SRCS = $(wildcard $(MCSMUS)/minisat/core/*.cc) $(wildcard $(MCSMUS)/minisat/simp/*.cc) $(wildcard $(MCSMUS)/minisat/utils/*.cc) \
 		$(wildcard $(MCSMUS)/glucose/core/*.cc) $(wildcard $(MCSMUS)/glucose/simp/*.cc) $(wildcard $(MCSMUS)/glucose/utils/*.cc) \
@@ -51,7 +51,7 @@ ifeq ($(USESMT),NO)
 	CSRCS := $(filter-out $(DIR)/satSolvers/Z3Handle.cpp, $(CSRCS))
 	COBJS := $(filter-out $(DIR)/satSolvers/Z3Handle.o, $(COBJS))
 else
-	LIBS   += -lz3
+	LIBS   += -L$(Z3)/build -lz3
 endif
 ifeq ($(USELTL),NO)
 	CFLAGS += -D NOLTL
@@ -65,7 +65,7 @@ endif
 
 must: $(COBJS) $(MCOBJS) $(MCSMUS_OBJS)
 	@echo Linking: $@
-	$(CXX) -o $@ $(COBJS) $(MCOBJS) $(MCSMUS_OBJS) $(CFLAGS) $(INC) $(LIBD) $(LIBS) 
+	$(CXX) -o $@ $(COBJS) $(MCOBJS) $(MCSMUS_OBJS) $(CFLAGS) $(INC) $(LIBD) $(LIBS)
 
 %.o: %.cpp
 	@echo Compiling: $@
