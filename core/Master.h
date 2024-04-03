@@ -21,6 +21,7 @@
 #include <ctime>
 #include <chrono>	
 #include <unordered_map>
+#include <smt-switch/smt_defs.h>
 
 using namespace std;
 
@@ -47,6 +48,7 @@ public:
 	string sat_solver;
 
 	Master(string filename, string alg);
+	Master(smt::SmtSolver s, std::vector<smt::Term> t, std::string alg);
 	~Master();
 	bool is_valid(Formula &f, bool core = false, bool grow = false);
 	void block_down(Formula f);
@@ -71,5 +73,7 @@ public:
 
 	//MARCO algorithm functions
 	void marco_base();
+private:
+	Master(string alg);
 };
 #endif

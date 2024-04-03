@@ -1,21 +1,30 @@
 #include "Master.h"
 #include "misc.h"
 #include <algorithm>
-#include <math.h>
 #include <functional>
-#include <random>
+#include <satSolvers/SmtSwitchSolverHandle.h>
 
-
-Master::Master(string filename, string alg){
-        isValidExecutions = 0;
+Master::Master(std::string alg) {
+	isValidExecutions = 0;
 	algorithm = alg;
 	sat_solver = "default";
+	verbose = false;
+	depthMUS = 0;
+	dim_reduction = 0.5;
+	output_file = "";
+	validate_mus_c = false;
+	current_depth = 0;
+	unex_sat = unex_unsat = 0;
+	hash = random_number();
+}
+
+Master::Master(string filename, string alg): Master(alg){
 	if(ends_with(filename, "smt2")){
 		#ifdef NOSMT
 			print_err("Working with SMT is currently not enabled. To enable it, run 'make cleanCore; make USESMT=YES'. For more info, see README.md.");
 		#else
 		satSolver = new Z3Handle(filename);
-	       	#endif	
+	       	#endif
 		domain = "smt";
 	}
 	else if(ends_with(filename, "cnf")){
@@ -35,18 +44,20 @@ Master::Master(string filename, string alg){
 	}
 	else
 		print_err("The input file has to have one of these extensions: .smt2, .ltl, or .cnf. See example files in ./examples/ folder.");
-	dimension = satSolver->dimension;	
+	dimension = satSolver->dimension;
 	cout << "Number of constraints in the input set:" << dimension << endl;
         explorer = new Explorer(dimension);	
 	explorer->satSolver = satSolver;
-        verbose = false;
-	depthMUS = 0;
-	dim_reduction = 0.5;
-	output_file = "";
-	validate_mus_c = false;
-	current_depth = 0;
-	unex_sat = unex_unsat = 0;
-        hash = random_number();
+	satSolver->hash = hash;
+}
+
+Master::Master(smt::SmtSolver s, std::vector<smt::Term> t, string alg) : Master(alg){
+	satSolver = new SmtSwitchSolverHandle(s, t);
+	domain = "smt";
+	dimension = satSolver->dimension;
+	cout << "Number of constraints in the input set:" << dimension << endl;
+	explorer = new Explorer(dimension);
+	explorer->satSolver = satSolver;
 	satSolver->hash = hash;
 }
 

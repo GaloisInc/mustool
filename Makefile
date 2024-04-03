@@ -4,11 +4,11 @@ MCSMUS	= $(DIR)/mcsmus
 MSAT	= libr
 Z3      = $(DIR)/deps/z3
 
-LIBD 	= -L/usr/lib -L/usr/local/lib
+LIBD 	= -L/usr/lib -L/usr/local/lib -L$(PONO_ROOT)/deps/smt-switch/local/lib -lsmt-switch
 LIBS 	= -lz
 LIBS	+= -lstdc++fs
 USR 	= /usr/include
-INC 	= -I $(MCSMUS) -I $(MINISAT) -I $(USR) -I /usr/local/include -I $(DIR) -I $(MCSMUS) -I $(Z3)/src/api -I $(Z3)/src/api/c++
+INC 	= -I $(MCSMUS) -I $(MINISAT) -I $(USR) -I /usr/local/include -I $(DIR) -I $(MCSMUS) -I $(Z3)/src/api -I $(Z3)/src/api/c++ -I $(PONO_ROOT)/deps/smt-switch/local/include
 
 CSRCS	= $(wildcard *.cpp) $(wildcard $(DIR)/algorithms/*.cpp)
 CSRCS	+= $(wildcard $(DIR)/satSolvers/*.cpp) $(wildcard $(DIR)/core/*.cpp)
